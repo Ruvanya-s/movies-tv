@@ -1,64 +1,22 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import Row from './Row';
-import RowTrack from './RowTrack';
-import JsonLd from './JsonLd';
-import { NotConnected, Notice } from './States';
-import { StarIcon } from './Icons';
-import { hasApiKey, tmdb, img, SITE_URL } from '@/lib/tmdb';
+import { Link, useParams } from 'react-router';
+import Row from '@/components/Row';
+import RowTrack from '@/components/RowTrack';
+import Seo from '@/components/Seo';
+import JsonLd from '@/components/JsonLd';
+import { NotConnected, Notice } from '@/components/States';
+import { StarIcon } from '@/components/Icons';
+import NotFound from './NotFound';
+import { useTmdb } from '@/hooks/useTmdb';
+import { hasApiKey, img, NotFoundError } from '@/lib/tmdb';
 import { btn, chip, gutter, pill } from '@/lib/ui';
 import type { MediaType, TmdbDetail } from '@/lib/types';
 
 const runtime = (m?: number) => (m ? `${Math.floor(m / 60)}h ${m % 60}m` : null);
 
-export function getTitle(type: MediaType, id: string) {
-  if (!/^\d+$/.test(id)) return Promise.resolve(null);
-  return tmdb<TmdbDetail>(`/${type}/${id}`, { append_to_response: 'credits,videos' });
-}
-
-const findTrailer = (d: TmdbDetail) =>
-  d.videos?.results.find((v) => v.site === 'YouTube' && v.type === 'Trailer');
+const findTrailer = (d: TmdbDetail) => d.videos?.results.find((v) => v.site === 'YouTube' && v.type === 'Trailer');
 const findDirector = (d: TmdbDetail) => d.credits?.crew.find((c) => c.job === 'Director');
 
-/** Page title, description and link-preview tags for /movie/[id] and /tv/[id]. */
-export async function detailMetadata(type: MediaType, id: string): Promise<Metadata> {
-  let data: TmdbDetail | null;
-  try {
-    data = await getTitle(type, id);
-  } catch {
-    return { title: 'Not available' };
-  }
-  if (!data) return { title: 'Not found' };
-
-  const name = data.title || data.name || 'Untitled';
-  const year = (data.release_date || data.first_air_date || '').slice(0, 4);
-  const title = year ? `${name} (${year})` : name;
-  const description = (data.overview || `${name}: details, cast and ratings.`).slice(0, 160);
-  const path = `/${type}/${id}`;
-  const backdrop = img(data.backdrop_path, 'w1280');
-  const poster = img(data.poster_path, 'w500');
-  const images = [
-    ...(backdrop ? [{ url: backdrop, width: 1280, height: 720, alt: name }] : []),
-    ...(poster ? [{ url: poster, width: 500, height: 750, alt: `${name} poster` }] : []),
-  ];
-
-  return {
-    title,
-    description,
-    alternates: { canonical: path },
-    openGraph: {
-      type: type === 'tv' ? 'video.tv_show' : 'video.movie',
-      title,
-      description,
-      url: path,
-      images,
-    },
-    twitter: { card: 'summary_large_image', title, description, images: images.map((i) => i.url) },
-  };
-}
-
-/** schema.org Movie / TVSeries data so Google can show rich results. */
+/** schema.org Movie / TVSeries data that helps search engines understand the page. */
 function structuredData(type: MediaType, d: TmdbDetail): Record<string, unknown> {
   const name = d.title || d.name;
   const director = findDirector(d);
@@ -67,7 +25,7 @@ function structuredData(type: MediaType, d: TmdbDetail): Record<string, unknown>
     '@context': 'https://schema.org',
     '@type': type === 'tv' ? 'TVSeries' : 'Movie',
     name,
-    url: `${SITE_URL}/${type}/${d.id}`,
+    url: `${window.location.origin}/${type}/${d.id}`,
     description: d.overview || undefined,
     image: img(d.poster_path, 'w500') ?? undefined,
     datePublished: d.release_date || d.first_air_date || undefined,
@@ -99,7 +57,15 @@ function structuredData(type: MediaType, d: TmdbDetail): Record<string, unknown>
   };
 }
 
-export default async function DetailView({ type, id }: { type: MediaType; id: string }) {
+/** Detail page for /movie/:id and /tv/:id. */
+export default function Details({ type }: { type: MediaType }) {
+  const { id = '' } = useParams();
+  const validId = /^\d+$/.test(id);
+  const { data, loading, error } = useTmdb<TmdbDetail>(validId ? `/${type}/${id}` : null, {
+    append_to_response: 'credits,videos',
+  });
+
+  if (!validId || error instanceof NotFoundError) return <NotFound />;
   if (!hasApiKey) {
     return (
       <div className={gutter}>
@@ -107,21 +73,24 @@ export default async function DetailView({ type, id }: { type: MediaType; id: st
       </div>
     );
   }
-
-  let data: TmdbDetail | null;
-  try {
-    data = await getTitle(type, id);
-  } catch (e) {
+  if (error) {
     return (
       <div className={gutter}>
-        <Notice title="Something went wrong" text={(e as Error).message} />
+        <Notice title="Something went wrong" text={error.message} />
       </div>
     );
   }
-  if (!data) notFound();
+  if (loading || !data) {
+    return (
+      <div className={`${gutter} pt-6`}>
+        <div className="skeleton h-[60vh] rounded-[18px]" />
+      </div>
+    );
+  }
 
   const title = data.title || data.name || 'Untitled';
   const date = data.release_date || data.first_air_date || '';
+  const year = date.slice(0, 4);
   const trailer = findTrailer(data);
   const director = findDirector(data);
   const cast = data.credits?.cast.slice(0, 12) ?? [];
@@ -131,7 +100,7 @@ export default async function DetailView({ type, id }: { type: MediaType; id: st
   const poster = img(data.poster_path, 'w500');
 
   const facts = [
-    date.slice(0, 4),
+    year,
     type === 'movie' ? runtime(data.runtime) : seasons ? `${seasons} season${seasons > 1 ? 's' : ''}` : null,
     type === 'tv' ? 'Series' : 'Film',
   ].filter(Boolean) as string[];
@@ -145,14 +114,16 @@ export default async function DetailView({ type, id }: { type: MediaType; id: st
 
   return (
     <article className="relative">
+      <Seo
+        title={year ? `${title} (${year})` : title}
+        description={(data.overview || `${title}: details, cast and ratings.`).slice(0, 160)}
+        image={backdrop ?? poster}
+      />
       <JsonLd data={structuredData(type, data)} />
 
       {/* Faded backdrop behind the header */}
-      <div className="absolute inset-x-0 top-0 -z-0 h-[70vh] overflow-hidden">
-        {backdrop && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={backdrop} alt="" fetchPriority="high" className="h-full w-full object-cover opacity-55" />
-        )}
+      <div className="absolute inset-x-0 top-0 h-[70vh] overflow-hidden">
+        {backdrop && <img src={backdrop} alt="" fetchPriority="high" className="h-full w-full object-cover opacity-55" />}
         <div className="absolute inset-0 bg-linear-to-b from-bg/30 to-bg to-95%" />
       </div>
 
@@ -161,12 +132,9 @@ export default async function DetailView({ type, id }: { type: MediaType; id: st
       >
         <div className="aspect-[2/3] w-[180px] overflow-hidden rounded-[14px] border border-border bg-surface shadow-[0_30px_60px_rgba(0,0,0,0.45)] md:w-auto">
           {poster ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={poster} alt={`${title} poster`} width={500} height={750} className="h-full w-full object-cover" />
           ) : (
-            <div className="grid h-full place-items-center p-3 text-center font-display text-sm text-muted">
-              {title}
-            </div>
+            <div className="grid h-full place-items-center p-3 text-center font-display text-sm text-muted">{title}</div>
           )}
         </div>
 
@@ -189,14 +157,12 @@ export default async function DetailView({ type, id }: { type: MediaType; id: st
           </div>
           <div className="my-[18px] flex flex-wrap gap-2.5">
             {data.genres?.map((g) => (
-              <Link key={g.id} className={chip()} href={`/browse?${type === 'tv' ? 'type=tv&' : ''}genre=${g.id}`}>
+              <Link key={g.id} className={chip()} to={`/browse?${type === 'tv' ? 'type=tv&' : ''}genre=${g.id}`}>
                 {g.name}
               </Link>
             ))}
           </div>
-          <p className="max-w-[70ch] text-lg leading-relaxed text-cream-2">
-            {data.overview || 'No overview available.'}
-          </p>
+          <p className="max-w-[70ch] text-lg leading-relaxed text-cream-2">{data.overview || 'No overview available.'}</p>
 
           <dl className="my-6 mb-[30px] grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 font-semibold">
             {details
@@ -224,7 +190,6 @@ export default async function DetailView({ type, id }: { type: MediaType; id: st
               <div key={p.credit_id} className="min-w-0 text-center">
                 <div className="grid aspect-square place-items-center overflow-hidden rounded-full border border-line bg-surface font-display text-[32px] text-muted">
                   {p.profile_path ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={img(p.profile_path, 'w185')!} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
                   ) : (
                     p.name.charAt(0)

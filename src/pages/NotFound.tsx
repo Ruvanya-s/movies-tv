@@ -1,15 +1,14 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import { Link } from 'react-router';
 import PageTitle from '@/components/PageTitle';
+import Seo from '@/components/Seo';
 import { btn, gutter } from '@/lib/ui';
-
-export const metadata: Metadata = { title: 'Page not found' };
 
 export default function NotFound() {
   return (
     <div className={gutter}>
+      <Seo title="Page not found" noindex />
       <PageTitle label="404" title="This reel is missing." />
-      <Link className={btn} href="/">
+      <Link className={btn} to="/">
         Back to home
       </Link>
     </div>

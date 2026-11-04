@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router';
 import { StarIcon } from './Icons';
 import type { Title } from '@/lib/types';
 
@@ -6,11 +6,10 @@ type CardProps = { item: Title; priority?: boolean };
 
 export default function Card({ item, priority = false }: CardProps) {
   return (
-    <Link href={`/${item.type}/${item.id}`} className="group block min-w-0" title={item.title}>
+    <Link to={`/${item.type}/${item.id}`} className="group block min-w-0" title={item.title}>
       <div className="relative aspect-[2/3] overflow-hidden rounded-[10px] border border-line bg-surface">
         {item.poster ? (
-          // Plain <img>: TMDB already serves resized images from its own CDN.
-          // eslint-disable-next-line @next/next/no-img-element
+          // TMDB serves posters already resized from its own image CDN.
           <img
             src={item.poster}
             alt={`${item.title} poster`}

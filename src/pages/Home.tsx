@@ -1,23 +1,27 @@
-import Link from 'next/link';
+import { Link } from 'react-router';
 import Row from '@/components/Row';
+import Seo from '@/components/Seo';
 import JsonLd from '@/components/JsonLd';
 import { NotConnected, Notice } from '@/components/States';
 import { StarIcon } from '@/components/Icons';
-import { hasApiKey, tmdb, listOf, SITE_URL } from '@/lib/tmdb';
+import { useTmdb } from '@/hooks/useTmdb';
+import { hasApiKey, listOf } from '@/lib/tmdb';
 import { eyebrow, gutter, pill } from '@/lib/ui';
 import type { TmdbList } from '@/lib/types';
 
-export const revalidate = 3600; // rebuild the home page at most once an hour
-
-async function Spotlight() {
-  const pick = listOf(await tmdb<TmdbList>('/trending/all/day')).find((i) => i.backdrop);
+function Spotlight() {
+  const { data, loading } = useTmdb<TmdbList>('/trending/all/day');
+  if (loading) {
+    return <div className="skeleton mb-14 aspect-[4/5] min-h-[340px] rounded-[18px] md:aspect-[21/8]" />;
+  }
+  const pick = listOf(data).find((i) => i.backdrop);
   if (!pick) return null;
+
   return (
     <Link
-      href={`/${pick.type}/${pick.id}`}
+      to={`/${pick.type}/${pick.id}`}
       className="group relative mb-14 block aspect-[4/5] min-h-[340px] overflow-hidden rounded-[18px] border border-border md:aspect-[21/8]"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={pick.backdrop!}
         alt=""
@@ -43,27 +47,23 @@ async function Spotlight() {
   );
 }
 
-export default async function Home() {
-  let error: Error | null = null;
-  if (hasApiKey) {
-    try {
-      await tmdb('/configuration');
-    } catch (e) {
-      error = e as Error;
-    }
-  }
+export default function Home() {
+  // A cheap request to check the key works before drawing all the rows.
+  const probe = useTmdb('/configuration');
+  const origin = window.location.origin;
 
   return (
     <div className={gutter}>
+      <Seo />
       <JsonLd
         data={{
           '@context': 'https://schema.org',
           '@type': 'WebSite',
           name: 'Reel',
-          url: SITE_URL,
+          url: origin,
           potentialAction: {
             '@type': 'SearchAction',
-            target: `${SITE_URL}/search?q={search_term_string}`,
+            target: `${origin}/search?q={search_term_string}`,
             'query-input': 'required name=search_term_string',
           },
         }}
@@ -78,20 +78,15 @@ export default async function Home() {
 
       {!hasApiKey ? (
         <NotConnected />
-      ) : error ? (
-        <Notice title="Something went wrong" text={error.message} />
+      ) : probe.error ? (
+        <Notice title="Something went wrong" text={probe.error.message} />
       ) : (
         <>
           <Spotlight />
           <Row title="Trending this week" path="/trending/all/week" />
           <Row title="Now in theaters" path="/movie/now_playing" type="movie" seeAll="/browse?type=movie" />
           <Row title="Popular series" path="/tv/popular" type="tv" seeAll="/browse?type=tv" />
-          <Row
-            title="Top rated films"
-            path="/movie/top_rated"
-            type="movie"
-            seeAll="/browse?sort=vote_average.desc"
-          />
+          <Row title="Top rated films" path="/movie/top_rated" type="movie" seeAll="/browse?sort=vote_average.desc" />
           <Row
             title="Top rated series"
             path="/tv/top_rated"
