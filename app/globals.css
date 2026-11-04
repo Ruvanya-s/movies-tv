@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. Each one becomes a Tailwind class:
+ *   --color-bg      -> bg-bg, text-bg, border-bg
+ *   --color-muted   -> text-muted ...
+ *   --font-display  -> font-display
+ * Change a color here and it updates everywhere.
+ */
+@theme {
+  --color-bg: #1f120d;
+  --color-surface: #2b1c16;
+  --color-surface-2: #35241c;
+  --color-border: #4a3328;
+  --color-line: #3b281f;
+  --color-cream: #f4ede2;
+  --color-cream-2: #e7d9c7;
+  --color-muted: #b99e88;
+  --color-accent: #e8b067;
+
+  --font-display: var(--font-unbounded), 'Arial Black', sans-serif;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  @keyframes shimmer {
+    from { background-position: 100% 0; }
+    to { background-position: -200% 0; }
+  }
+}
+
+/* Loading placeholder background. Usage: className="skeleton" */
+@utility skeleton {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-surface) 30%,
+    var(--color-surface-2) 50%,
+    var(--color-surface) 70%
+  );
+  background-size: 300% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Horizontal scroller without a visible scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  body {
+    @apply min-h-screen bg-bg font-sans text-cream antialiased;
+  }
+  input[type='search']::-webkit-search-cancel-button {
+    filter: invert(0.7);
+  }
+}
