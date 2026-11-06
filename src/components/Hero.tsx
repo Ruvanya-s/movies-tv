@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { ChevronIcon, PlayIcon, StarIcon } from './Icons';
+import { ChevronIcon, PlayIcon } from './Icons';
 import { useTmdb } from '@/hooks/useTmdb';
 import { findTrailer, listOf } from '@/lib/tmdb';
 import { eyebrow, glass, glassArrow, gutter } from '@/lib/ui';
@@ -9,19 +9,18 @@ import type { Title, TmdbList, Video } from '@/lib/types';
 // The negative margin (the header's height) slides the banner under the translucent header.
 const height = '-mt-[127px] min-h-[680px] md:-mt-[76px] md:h-[min(100vh,856px)] md:min-h-[700px]';
 
-/** Five stars filled in proportion to a 0-10 rating. */
-function Stars({ rating }: { rating: string }) {
-  const stars = [0, 1, 2, 3, 4].map((i) => <StarIcon key={i} size={20} className="shrink-0" />);
+/**
+ * First half of the words (rounded up) in cream, the rest in the coral gradient.
+ * A one-word title is all gradient, so every title has some coral.
+ */
+function TwoToneTitle({ title }: { title: string }) {
+  const words = title.split(' ');
+  const cut = words.length > 1 ? Math.ceil(words.length / 2) : 0;
   return (
-    <span className="relative inline-flex gap-1 text-cream/25" role="img" aria-label={`Rated ${rating} out of 10`}>
-      {stars}
-      <span
-        className="absolute inset-y-0 left-0 flex gap-1 overflow-hidden text-accent"
-        style={{ width: `${Number(rating) * 10}%` }}
-      >
-        {stars}
-      </span>
-    </span>
+    <>
+      {cut > 0 && `${words.slice(0, cut).join(' ')} `}
+      <span className="text-coral">{words.slice(cut).join(' ')}</span>
+    </>
   );
 }
 
@@ -92,23 +91,17 @@ export default function Hero() {
       <div className="absolute inset-0 bg-linear-to-t from-bg via-bg/80 via-55% to-transparent md:bg-linear-to-r md:from-bg md:from-5% md:via-bg/70 md:via-40% md:to-transparent md:to-75%" />
       <div className="absolute inset-0 bg-linear-to-t from-bg to-transparent to-25%" />
       <div className="absolute inset-0 bg-linear-to-b from-bg/80 to-transparent to-25%" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_100%_at_0%_0%,rgb(255_107_91/0.34),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_100%_at_0%_0%,rgb(255_129_112/0.34),transparent_70%)]" />
 
       <div
         className={`${gutter} relative flex w-full flex-col justify-end gap-8 pt-56 pb-10 md:flex-row md:items-center md:justify-between md:gap-12 md:pt-[124px] md:pb-12`}
       >
         <div key={pick.id} className={`max-w-[620px] ${arrived}`} aria-live="polite">
           <span className={eyebrow}>Trending today</span>
-          <h2 className="text-headline mt-4 line-clamp-3 w-fit pb-2 font-display text-[clamp(38px,5.6vw,76px)] leading-[1.04] font-extrabold tracking-tight">
-            {pick.title}
+          <h2 className="mt-4 line-clamp-3 pb-2 font-display text-[clamp(38px,5.6vw,76px)] leading-[1.04] font-extrabold tracking-tight">
+            <TwoToneTitle title={pick.title} />
           </h2>
           <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[15px] font-semibold text-cream-2">
-            {pick.rating && (
-              <>
-                <Stars rating={pick.rating} />
-                <span>TMDB {pick.rating}</span>
-              </>
-            )}
             {pick.year && <span>{pick.year}</span>}
             <span>{pick.type === 'tv' ? 'Series' : 'Film'}</span>
           </div>

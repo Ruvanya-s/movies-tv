@@ -12,8 +12,6 @@ export interface TmdbListItem {
   first_air_date?: string; // tv
   poster_path: string | null;
   backdrop_path: string | null;
-  vote_average?: number;
-  vote_count?: number;
   overview?: string;
 }
 
@@ -68,6 +66,5 @@ export interface Title {
   year: string;
   poster: string | null;
   backdrop: string | null;
-  rating: string | null;
   overview: string;
 }

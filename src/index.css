@@ -8,7 +8,7 @@
  * Change a color here and it updates everywhere.
  */
 @theme {
-  /* Brand: navy #0B1428, coral #FF6B5B, cream #F4EDE0 */
+  /* Brand: navy #0B1428, coral #FF8170, cream #F4EDE0 */
   --color-bg: #0b1428;
   --color-surface: #131e38;
   --color-surface-2: #1b2947;
@@ -17,7 +17,7 @@
   --color-cream: #f4ede0;
   --color-cream-2: #efe8db;
   --color-muted: #d2ccc3;
-  --color-accent: #ff6b5b;
+  --color-accent: #ff8170;
 
   --font-display: 'Syne', 'Arial Black', sans-serif;
   --font-sans: 'Inter', system-ui, sans-serif;
@@ -51,7 +51,7 @@
 
 /* The signature coral gradient. Change it here and every use follows. */
 :root {
-  --gradient-coral: linear-gradient(105deg, #ffb7a3 0%, #ff6b5b 55%, #e8473d 100%);
+  --gradient-coral: linear-gradient(105deg, #ffc5b6 0%, #ff9384 55%, #ff7666 100%);
 }
 
 /* Coral gradient fill for buttons, active states and bars. */
@@ -66,16 +66,10 @@
   color: transparent;
 }
 
-/* Big headline fill: cream at the top, melting through peach into coral. Pair with w-fit. */
-@utility text-headline {
-  background-image: linear-gradient(160deg, #f4ede0 0%, #f4ede0 24%, #f2b6a3 46%, #ff6b5b 76%);
-  background-clip: text;
-  color: transparent;
-}
-
-/* Soft coral light in the top-left corner of a page. */
+/* Coral wash behind a page title: runs left to right, melting into the navy with no visible edge. */
 @utility coral-glow {
-  background-image: radial-gradient(ellipse 70% 100% at 0% 0%, rgb(255 107 91 / 0.26), transparent 70%);
+  background-image: linear-gradient(to right, rgb(255 129 112 / 0.2), rgb(255 129 112 / 0.09) 50%, transparent 90%);
+  mask-image: linear-gradient(to bottom, black, rgb(0 0 0 / 0.6) 40%, rgb(0 0 0 / 0.2) 70%, transparent);
 }
 
 /* Loading placeholder background. Usage: className="skeleton" */

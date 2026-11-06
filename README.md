@@ -46,7 +46,7 @@ to visitors. That's normal for TMDB's free, read-only keys.
 | URL | What it is |
 | --- | --- |
 | `/` | Trending hero carousel with a next arrow, rows for trending, in theaters, popular and top rated |
-| `/browse` | Movies / TV Shows, genre and sort dropdowns, page links (`?type=tv&genre=18&sort=newest&page=2`) |
+| `/browse` | Genre sidebar, Movies / TV Shows toggle, sort dropdown, page links (`?type=tv&genre=18&sort=newest&page=2`) |
 | `/search?q=...` | Search across movies and TV |
 | `/movie/:id`, `/tv/:id` | Detail page: backdrop, facts, genres, trailer, cast, recommendations |
 

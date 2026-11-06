@@ -4,11 +4,11 @@ import Row from '@/components/Row';
 import Seo from '@/components/Seo';
 import JsonLd from '@/components/JsonLd';
 import { NotConnected, Notice } from '@/components/States';
-import { PlayIcon, StarIcon } from '@/components/Icons';
+import { PlayIcon } from '@/components/Icons';
 import NotFound from './NotFound';
 import { useTmdb } from '@/hooks/useTmdb';
 import { dataReady, findTrailer, img, NotFoundError } from '@/lib/tmdb';
-import { btn, chip, gutter, pill } from '@/lib/ui';
+import { btn, chip, gutter } from '@/lib/ui';
 import type { MediaType, TmdbDetail } from '@/lib/types';
 
 const runtime = (m?: number) => (m ? `${Math.floor(m / 60)}h ${m % 60}m` : null);
@@ -34,16 +34,6 @@ function structuredData(type: MediaType, d: TmdbDetail): Record<string, unknown>
     creator: d.created_by?.length ? d.created_by.map((c) => ({ '@type': 'Person', name: c.name })) : undefined,
     numberOfSeasons: type === 'tv' ? d.number_of_seasons : undefined,
     duration: d.runtime ? `PT${Math.floor(d.runtime / 60)}H${d.runtime % 60}M` : undefined,
-    aggregateRating:
-      d.vote_count && d.vote_average
-        ? {
-            '@type': 'AggregateRating',
-            ratingValue: Number(d.vote_average.toFixed(1)),
-            bestRating: 10,
-            worstRating: 0,
-            ratingCount: d.vote_count,
-          }
-        : undefined,
     trailer: trailer
       ? {
           '@type': 'VideoObject',
@@ -60,8 +50,8 @@ function structuredData(type: MediaType, d: TmdbDetail): Record<string, unknown>
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <dt className="inline text-cream/60">{label}: </dt>
-      <dd className="inline font-medium">{children}</dd>
+      <dt className="inline font-normal text-cream">{label}: </dt>
+      <dd className="inline font-bold">{children}</dd>
     </div>
   );
 }
@@ -144,7 +134,7 @@ export default function Details({ type }: { type: MediaType }) {
     <article className="relative">
       <Seo
         title={year ? `${title} (${year})` : title}
-        description={(data.overview || `${title}: details, cast and ratings.`).slice(0, 160)}
+        description={(data.overview || `${title}: details, cast and trailer.`).slice(0, 160)}
         image={backdrop ?? poster}
       />
       <JsonLd data={structuredData(type, data)} />
@@ -153,13 +143,13 @@ export default function Details({ type }: { type: MediaType }) {
       <div className="absolute inset-x-0 top-0 h-[70vh] overflow-hidden">
         {backdrop && <img src={backdrop} alt="" fetchPriority="high" className="h-full w-full object-cover opacity-55" />}
         <div className="absolute inset-0 bg-linear-to-b from-bg/30 to-bg to-95%" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_0%_100%,rgb(255_107_91/0.4),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_0%_100%,rgb(255_129_112/0.4),transparent_70%)]" />
       </div>
 
       <div
         className={`${gutter} relative grid grid-cols-1 gap-6 pt-[30vh] pb-14 md:grid-cols-[minmax(180px,300px)_1fr] md:gap-14 md:pt-[18vh]`}
       >
-        <div className="aspect-[2/3] w-[180px] overflow-hidden rounded-2xl bg-surface shadow-[0_30px_60px_-10px_rgb(255_107_91/0.35)] md:w-auto">
+        <div className="aspect-[2/3] w-[180px] overflow-hidden rounded-2xl bg-surface shadow-[0_30px_60px_-10px_rgb(255_129_112/0.35)] md:w-auto">
           {poster ? (
             <img src={poster} alt={`${title} poster`} width={500} height={750} className="h-full w-full object-cover" />
           ) : (
@@ -175,11 +165,6 @@ export default function Details({ type }: { type: MediaType }) {
             {title}
           </h1>
           <div className="flex flex-wrap items-center gap-3.5 font-semibold text-muted">
-            {data.vote_average ? (
-              <span className={pill}>
-                <StarIcon /> {data.vote_average.toFixed(1)}
-              </span>
-            ) : null}
             {facts.map((f) => (
               <span key={f}>{f}</span>
             ))}

@@ -23,7 +23,15 @@ export default function Search() {
     <div className={gutter}>
       {/* Search results shouldn't appear in Google; the title pages themselves should. */}
       <Seo title={q ? `Search results for “${q}”` : 'Search'} noindex />
-      <PageTitle label="Search" title={q ? `“${q}”` : 'Search movies & TV'} />
+      {q ? (
+        <section className="pt-10 pb-7 md:pt-14">
+          <h1 className="font-display text-2xl leading-snug font-bold tracking-tight wrap-anywhere md:text-[32px]">
+            These are the results for <span className="text-coral">“{q}”</span>
+          </h1>
+        </section>
+      ) : (
+        <PageTitle label="Search" title="Search movies & TV" />
+      )}
 
       {!dataReady ? (
         <NotConnected />
@@ -34,7 +42,7 @@ export default function Search() {
       ) : loading ? (
         <GridSkeleton />
       ) : items.length === 0 ? (
-        <Notice title="No matches" text="Check the spelling or try another title." />
+        <Notice title="No matches for your search" />
       ) : (
         <Grid items={items} />
       )}

@@ -10,6 +10,13 @@ import { dataReady, listOf } from '@/lib/tmdb';
 import { btn, btnGhost, gutter, segment } from '@/lib/ui';
 import type { Genre, MediaType, TmdbList } from '@/lib/types';
 
+const genreLink = (active: boolean) =>
+  `shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[15px] transition-colors md:rounded-xl ${
+    active
+      ? 'border-transparent bg-cream font-bold text-bg'
+      : 'border-border font-medium text-cream hover:bg-cream/10 md:border-transparent'
+  }`;
+
 type SelectProps = { label: string; value: string; onChange: (value: string) => void; children: ReactNode };
 
 function Select({ label, value, onChange, children }: SelectProps) {
@@ -88,7 +95,7 @@ export default function Browse() {
   const seo = (
     <Seo
       title={g ? `${g} ${kind}` : `Browse ${kind}`}
-      description={`Browse ${g ? `${g.toLowerCase()} ` : ''}${kind.toLowerCase()}, sorted by ${SORTS[sort].toLowerCase()}, with ratings and release years.`}
+      description={`Browse ${g ? `${g.toLowerCase()} ` : ''}${kind.toLowerCase()}, sorted by ${SORTS[sort].toLowerCase()}, with release years.`}
     />
   );
 
@@ -107,67 +114,95 @@ export default function Browse() {
       {seo}
       <PageTitle title={heading} />
 
-      <div className="mb-9 flex flex-wrap items-center gap-3.5">
-        <div className="inline-flex h-12 items-center rounded-full bg-cream p-1">
-          {(
-            [
-              ['movie', 'Movies'],
-              ['tv', 'TV Shows'],
-            ] as const
-          ).map(([v, label]) => (
-            <Link key={v} className={segment(type === v)} to={href(f, { type: v, genre: '', page: 1 })}>
-              {label}
-            </Link>
-          ))}
-        </div>
-        <Select label="Genre" value={genre} onChange={(v) => navigate(href(f, { genre: v, page: 1 }))}>
-          <option value="">All genres</option>
-          {genres.map((x) => (
-            <option key={x.id} value={x.id}>
-              {x.name}
-            </option>
-          ))}
-        </Select>
-        <Select label="Sort by" value={sort} onChange={(v) => navigate(href(f, { sort: v as Sort, page: 1 }))}>
-          {(Object.keys(SORTS) as Sort[]).map((v) => (
-            <option key={v} value={v}>
-              {SORTS[v]}
-            </option>
-          ))}
-        </Select>
-      </div>
-
-      {error ? (
-        <Notice title="Something went wrong" text={error.message} />
-      ) : loading ? (
-        <GridSkeleton />
-      ) : items.length === 0 ? (
-        <Notice title="Nothing here yet" text="Try a different genre or sort order." />
-      ) : (
-        <Grid items={items} />
-      )}
-
-      {!loading && items.length > 0 && (
-        <nav className="mt-2 mb-16 flex items-center justify-between gap-4" aria-label="Pagination">
-          {page > 1 ? (
-            <Link className={btnGhost} to={href(f, { page: page - 1 })} rel="prev">
-              ← Previous
-            </Link>
-          ) : (
-            <span />
-          )}
-          <span className="font-semibold text-muted">
-            Page {page} of {totalPages}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[200px_minmax(0,1fr)] md:gap-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+        {/* A swipeable row on phones; a list that stays in view on larger screens. */}
+        <aside className="min-w-0 md:sticky md:top-[100px] md:mt-10 md:max-h-[calc(100vh-120px)] md:self-start md:overflow-y-auto md:no-scrollbar">
+          <span className="mb-3 hidden text-[13px] font-bold tracking-[0.22em] text-cream uppercase md:block">
+            Genres
           </span>
-          {page < totalPages ? (
-            <Link className={btn} to={href(f, { page: page + 1 })} rel="next">
-              Next →
+          <nav
+            aria-label="Genres"
+            className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-col md:gap-1 md:overflow-visible md:px-0"
+          >
+            <Link
+              className={genreLink(!genre)}
+              aria-current={!genre ? 'page' : undefined}
+              to={href(f, { genre: '', page: 1 })}
+            >
+              All genres
             </Link>
+            {genres.map((x) => {
+              const active = genre === String(x.id);
+              return (
+                <Link
+                  key={x.id}
+                  className={genreLink(active)}
+                  aria-current={active ? 'page' : undefined}
+                  to={href(f, { genre: String(x.id), page: 1 })}
+                >
+                  {x.name}
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <div className="min-w-0">
+          <div className="mb-8 flex flex-wrap items-center gap-3.5">
+            <div className="inline-flex h-12 items-center rounded-full bg-cream p-1">
+              {(
+                [
+                  ['movie', 'Movies'],
+                  ['tv', 'TV Shows'],
+                ] as const
+              ).map(([v, label]) => (
+                <Link key={v} className={segment(type === v)} to={href(f, { type: v, genre: '', page: 1 })}>
+                  {label}
+                </Link>
+              ))}
+            </div>
+            <Select label="Sort by" value={sort} onChange={(v) => navigate(href(f, { sort: v as Sort, page: 1 }))}>
+              {(Object.keys(SORTS) as Sort[]).map((v) => (
+                <option key={v} value={v}>
+                  {SORTS[v]}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          {error ? (
+            <Notice title="Something went wrong" text={error.message} />
+          ) : loading ? (
+            <GridSkeleton />
+          ) : items.length === 0 ? (
+            <Notice title="Nothing here yet" text="Try a different genre or sort order." />
           ) : (
-            <span />
+            <Grid items={items} />
           )}
-        </nav>
-      )}
+
+          {!loading && items.length > 0 && (
+            <nav className="mt-2 mb-16 flex items-center justify-between gap-4" aria-label="Pagination">
+              {page > 1 ? (
+                <Link className={btnGhost} to={href(f, { page: page - 1 })} rel="prev">
+                  ← Previous
+                </Link>
+              ) : (
+                <span />
+              )}
+              <span className="font-semibold text-muted">
+                Page {page} of {totalPages}
+              </span>
+              {page < totalPages ? (
+                <Link className={btn} to={href(f, { page: page + 1 })} rel="next">
+                  Next →
+                </Link>
+              ) : (
+                <span />
+              )}
+            </nav>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

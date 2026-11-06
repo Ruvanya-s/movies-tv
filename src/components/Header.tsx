@@ -26,7 +26,7 @@ export default function Header() {
       </div>
       <SearchBox />
       {/* Coral line that fades out to the right */}
-      <div className="absolute inset-x-0 bottom-0 h-[3px] bg-linear-to-r from-[#ffb7a3] via-accent to-accent/15" />
+      <div className="absolute inset-x-0 bottom-0 h-[3px] bg-linear-to-r from-[#ffc5b6] via-accent to-accent/15" />
     </header>
   );
 }

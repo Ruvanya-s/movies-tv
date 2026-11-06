@@ -76,7 +76,6 @@ export function normalize(item: TmdbListItem, fallbackType?: MediaType): Title {
     year: date.slice(0, 4),
     poster: img(item.poster_path, 'w342'),
     backdrop: img(item.backdrop_path, 'w1280'),
-    rating: item.vote_average ? item.vote_average.toFixed(1) : null,
     overview: item.overview ?? '',
   };
 }

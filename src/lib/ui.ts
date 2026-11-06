@@ -21,7 +21,7 @@ export const glassArrow = `${glass} shrink-0 cursor-pointer place-items-center r
 
 /** Primary pill button. */
 export const btn =
-  'inline-flex items-center gap-2 rounded-full bg-coral px-7 py-3 text-base font-extrabold text-bg shadow-[0_10px_30px_-8px_rgb(255_107_91/0.7)] transition-all hover:-translate-y-px hover:shadow-[0_14px_36px_-6px_rgb(255_107_91/0.9)]';
+  'inline-flex items-center gap-2 rounded-full bg-coral px-7 py-3 text-base font-extrabold text-bg shadow-[0_10px_30px_-8px_rgb(255_129_112/0.7)] transition-all hover:-translate-y-px hover:shadow-[0_14px_36px_-6px_rgb(255_129_112/0.9)]';
 
 /** Outlined pill button. */
 export const btnGhost =
@@ -36,8 +36,5 @@ export const chip = (active = false) =>
 /** Option inside a segmented control (Movies | TV Shows), which sits on cream. */
 export const segment = (active = false) =>
   `whitespace-nowrap rounded-full px-6 py-2 font-bold text-bg transition-colors ${
-    active ? 'bg-coral shadow-[0_6px_20px_-6px_rgb(255_107_91/0.8)]' : 'hover:text-[#c9372c]'
+    active ? 'bg-coral shadow-[0_6px_20px_-6px_rgb(255_129_112/0.8)]' : 'hover:text-[#c9372c]'
   }`;
-
-/** Rating badge. */
-export const pill = 'inline-flex items-center gap-1.5 rounded-full bg-coral px-2.5 py-1 font-bold text-bg';

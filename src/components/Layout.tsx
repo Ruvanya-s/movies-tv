@@ -18,7 +18,7 @@ export default function Layout() {
     <>
       <Header />
       <main className="relative isolate min-h-[calc(100vh-160px)]">
-        <div className="coral-glow absolute inset-x-0 top-0 -z-10 h-[520px]" />
+        <div className="coral-glow absolute inset-x-0 top-0 -z-10 h-[340px]" />
         <Outlet />
       </main>
       <footer className="relative mt-10 flex flex-wrap justify-between gap-3 px-4 py-7 text-[13px] text-muted md:px-10 lg:px-16">

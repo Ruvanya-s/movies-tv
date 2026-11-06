@@ -1,5 +1,4 @@
 import { Link } from 'react-router';
-import { StarIcon } from './Icons';
 import type { Title } from '@/lib/types';
 
 type CardProps = { item: Title; priority?: boolean };
@@ -28,14 +27,7 @@ export default function Card({ item, priority = false }: CardProps) {
       <h3 className="mt-3 line-clamp-2 text-sm leading-snug font-semibold transition-colors group-hover:text-accent md:text-[15px]">
         {item.title}
       </h3>
-      <div className="mt-1 flex items-center justify-center gap-1.5 truncate text-[13px] text-muted">
-        {item.rating && (
-          <>
-            <StarIcon size={12} className="shrink-0 text-accent" /> {item.rating} ·
-          </>
-        )}{' '}
-        {item.year || '—'}
-      </div>
+      <div className="mt-1 truncate text-[13px] text-muted">{item.year || '—'}</div>
     </Link>
   );
 }
