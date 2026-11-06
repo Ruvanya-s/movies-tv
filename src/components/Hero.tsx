@@ -65,7 +65,6 @@ export default function Hero() {
     setPrevious(selected);
     setSelected(next);
   };
-  // Fade on page load, slide on every change after that.
   const arrived = previous === null ? 'animate-fade-in' : 'animate-slide-soft motion-reduce:animate-fade-in';
 
   return (
