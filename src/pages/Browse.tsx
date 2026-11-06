@@ -37,7 +37,6 @@ function Select({ label, value, onChange, children }: SelectProps) {
 
 const SORTS = {
   'popularity.desc': 'Most popular',
-  'vote_average.desc': 'Highest rated',
   newest: 'Newest',
 } as const;
 type Sort = keyof typeof SORTS;
@@ -81,7 +80,7 @@ export default function Browse() {
     page,
     sort_by: sortBy,
     with_genres: genre,
-    'vote_count.gte': sort === 'vote_average.desc' ? 300 : sort === 'newest' ? 20 : undefined,
+    'vote_count.gte': sort === 'newest' ? 20 : undefined,
     // Hide titles that haven't come out yet.
     [type === 'movie' ? 'primary_release_date.lte' : 'first_air_date.lte']: today,
   });
@@ -116,7 +115,7 @@ export default function Browse() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[200px_minmax(0,1fr)] md:gap-10 lg:grid-cols-[220px_minmax(0,1fr)]">
         {/* A swipeable row on phones; a list that stays in view on larger screens. */}
-        <aside className="min-w-0 md:sticky md:top-[100px] md:mt-10 md:max-h-[calc(100vh-120px)] md:self-start md:overflow-y-auto md:no-scrollbar">
+        <aside className="min-w-0 md:sticky md:top-[147px] md:mt-10 md:max-h-[calc(100vh-167px)] lg:top-[100px] lg:max-h-[calc(100vh-120px)] md:self-start md:overflow-y-auto md:[scrollbar-color:rgb(244_237_224/0.35)_transparent] md:[scrollbar-width:thin]">
           <span className="mb-3 hidden text-[13px] font-bold tracking-[0.22em] text-cream uppercase md:block">
             Genres
           </span>
@@ -184,7 +183,7 @@ export default function Browse() {
             <nav className="mt-2 mb-16 flex items-center justify-between gap-4" aria-label="Pagination">
               {page > 1 ? (
                 <Link className={btnGhost} to={href(f, { page: page - 1 })} rel="prev">
-                  ← Previous
+                  Previous
                 </Link>
               ) : (
                 <span />
@@ -194,7 +193,7 @@ export default function Browse() {
               </span>
               {page < totalPages ? (
                 <Link className={btn} to={href(f, { page: page + 1 })} rel="next">
-                  Next →
+                  Next
                 </Link>
               ) : (
                 <span />

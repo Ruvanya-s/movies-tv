@@ -5,16 +5,12 @@ const KEY = (import.meta.env.VITE_TMDB_API_KEY ?? '').trim();
 const BASE = 'https://api.themoviedb.org/3';
 const IS_TOKEN = KEY.length > 40; // v4 read tokens are long JWTs
 
-/** No key while developing: show made-up sample data from demo.ts. Never used in a production build. */
-export const isDemo = !KEY && import.meta.env.DEV;
-
-/** True when pages have something to load, from TMDB or the sample data. */
-export const dataReady = KEY.length > 0 || isDemo;
+/** True when a TMDB key is set, so pages have something to load. */
+export const dataReady = KEY.length > 0;
 
 export type ImageSize = 'w185' | 'w342' | 'w500' | 'w1280' | 'original';
 
 export function img(path: string | null | undefined, size: ImageSize = 'w500'): string | null {
-  if (path?.startsWith('data:')) return path; // sample artwork is already a full image
   return path ? `https://image.tmdb.org/t/p/${size}${path}` : null;
 }
 
@@ -40,7 +36,6 @@ function buildUrl(path: string, params: Params = {}): URL {
 
 /** Fetch from TMDB. Throws NotFoundError for missing items and Error for other failures. */
 export function tmdb<T>(path: string, params?: Params): Promise<T> {
-  if (isDemo) return import('./demo').then((demo) => demo.demoResponse(path, params) as T);
   if (!dataReady) return Promise.reject(new Error('NO_KEY'));
   const url = buildUrl(path, params);
   const key = url.toString();

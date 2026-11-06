@@ -19,7 +19,7 @@ export default function Home() {
         data={{
           '@context': 'https://schema.org',
           '@type': 'WebSite',
-          name: 'Reel',
+          name: 'SlateQue',
           url: origin,
           potentialAction: {
             '@type': 'SearchAction',
@@ -30,7 +30,7 @@ export default function Home() {
       />
 
       {/* The banner shows a film's name, so the page's main heading is for screen readers and search engines. */}
-      <h1 className="sr-only">Reel: find your next favorite film or series</h1>
+      <h1 className="sr-only">SlateQue: find your next favorite film or series</h1>
 
       {!dataReady ? (
         <div className={gutter}>
@@ -47,12 +47,12 @@ export default function Home() {
             <Row title="Trending this week" path="/trending/all/week" seeAll="/browse" />
             <Row title="Now in theaters" path="/movie/now_playing" type="movie" seeAll="/browse?type=movie" />
             <Row title="Popular series" path="/tv/popular" type="tv" seeAll="/browse?type=tv" />
-            <Row title="Top rated films" path="/movie/top_rated" type="movie" seeAll="/browse?sort=vote_average.desc" />
+            <Row title="Top rated films" path="/movie/top_rated" type="movie" seeAll="/browse" />
             <Row
               title="Top rated series"
               path="/tv/top_rated"
               type="tv"
-              seeAll="/browse?type=tv&sort=vote_average.desc"
+              seeAll="/browse?type=tv"
             />
           </div>
         </>

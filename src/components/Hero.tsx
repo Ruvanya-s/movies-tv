@@ -3,11 +3,11 @@ import { Link } from 'react-router';
 import { ChevronIcon, PlayIcon } from './Icons';
 import { useTmdb } from '@/hooks/useTmdb';
 import { findTrailer, listOf } from '@/lib/tmdb';
-import { eyebrow, glass, glassArrow, gutter } from '@/lib/ui';
+import { btnTrailer, eyebrow, glass, glassArrow, gutter } from '@/lib/ui';
 import type { Title, TmdbList, Video } from '@/lib/types';
 
 // The negative margin (the header's height) slides the banner under the translucent header.
-const height = '-mt-[127px] min-h-[680px] md:-mt-[76px] md:h-[min(100vh,856px)] md:min-h-[700px]';
+const height = '-mt-[156px] min-h-[680px] sm:-mt-[127px] md:h-[min(100vh,856px)] md:min-h-[700px] lg:-mt-[76px]';
 
 /**
  * First half of the words (rounded up) in cream, the rest in the coral gradient.
@@ -39,7 +39,7 @@ function Actions({ pick }: { pick: Title }) {
       </Link>
       {trailer && (
         <a
-          className={`${glass} inline-flex animate-fade-in items-center gap-2 rounded-full bg-cream/12 px-6 py-3 font-bold transition-colors hover:bg-cream/25`}
+          className={`${btnTrailer} animate-fade-in`}
           href={`https://www.youtube.com/watch?v=${trailer.key}`}
           target="_blank"
           rel="noreferrer"
@@ -94,7 +94,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_100%_at_0%_0%,rgb(255_129_112/0.34),transparent_70%)]" />
 
       <div
-        className={`${gutter} relative flex w-full flex-col justify-end gap-8 pt-56 pb-10 md:flex-row md:items-center md:justify-between md:gap-12 md:pt-[124px] md:pb-12`}
+        className={`${gutter} relative flex w-full flex-col justify-end gap-8 pt-64 pb-10 md:flex-row md:items-center md:justify-between md:gap-12 md:pt-[175px] md:pb-12 lg:pt-[124px]`}
       >
         <div key={pick.id} className={`max-w-[620px] ${arrived}`} aria-live="polite">
           <span className={eyebrow}>Trending today</span>

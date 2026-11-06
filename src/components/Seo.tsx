@@ -6,8 +6,8 @@ type SeoProps = {
   noindex?: boolean;
 };
 
-const SITE = 'Reel';
-const DEFAULT_TITLE = 'Reel — Find your next favorite film or series';
+const SITE = 'SlateQue';
+const DEFAULT_TITLE = 'SlateQue — Find your next favorite film or series';
 
 /**
  * Sets the page <title> and meta tags. React 19 moves these into <head> automatically,

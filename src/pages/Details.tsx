@@ -8,7 +8,7 @@ import { PlayIcon } from '@/components/Icons';
 import NotFound from './NotFound';
 import { useTmdb } from '@/hooks/useTmdb';
 import { dataReady, findTrailer, img, NotFoundError } from '@/lib/tmdb';
-import { btn, chip, gutter } from '@/lib/ui';
+import { btnTrailer, chip, gutter } from '@/lib/ui';
 import type { MediaType, TmdbDetail } from '@/lib/types';
 
 const runtime = (m?: number) => (m ? `${Math.floor(m / 60)}h ${m % 60}m` : null);
@@ -141,9 +141,9 @@ export default function Details({ type }: { type: MediaType }) {
 
       {/* Faded backdrop behind the header */}
       <div className="absolute inset-x-0 top-0 h-[70vh] overflow-hidden">
-        {backdrop && <img src={backdrop} alt="" fetchPriority="high" className="h-full w-full object-cover opacity-55" />}
+        {backdrop && <img src={backdrop} alt="" fetchPriority="high" className="h-[95%] w-full object-cover opacity-55" />}
         <div className="absolute inset-0 bg-linear-to-b from-bg/30 to-bg to-95%" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_0%_100%,rgb(255_129_112/0.4),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_100%_at_0%_0%,rgb(255_129_112/0.34),transparent_70%)]" />
       </div>
 
       <div
@@ -194,7 +194,12 @@ export default function Details({ type }: { type: MediaType }) {
           </dl>
 
           {trailer && (
-            <a className={btn} href={`https://www.youtube.com/watch?v=${trailer.key}`} target="_blank" rel="noreferrer">
+            <a
+              className={btnTrailer}
+              href={`https://www.youtube.com/watch?v=${trailer.key}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               <PlayIcon /> Watch trailer
             </a>
           )}

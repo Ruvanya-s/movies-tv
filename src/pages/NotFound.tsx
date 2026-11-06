@@ -7,7 +7,7 @@ export default function NotFound() {
   return (
     <div className={gutter}>
       <Seo title="Page not found" noindex />
-      <PageTitle label="404" title="This reel is missing." />
+      <PageTitle label="404" title="This page is missing." />
       <Link className={btn} to="/">
         Back to home
       </Link>

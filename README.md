@@ -1,4 +1,4 @@
-# Reel — Movies & TV
+# SlateQue — Movies & TV
 
 A movie and TV browsing site built with **React** (on **Vite**), **TypeScript** and **Tailwind CSS**,
 using data from the TMDB API. Pages are handled by **React Router**.
@@ -17,9 +17,7 @@ using data from the TMDB API. Pages are handled by **React Router**.
    npm run dev
    ```
 
-   It opens http://localhost:5173. Without a key, the dev server shows made-up sample titles and artwork
-   from `src/lib/demo.ts` so you can work on the design. A production build without a key shows
-   "Movie data isn't connected yet" instead.
+   It opens http://localhost:5173. Without a key you'll see "Movie data isn't connected yet".
 
 ## Connect movie data (TMDB)
 
@@ -67,7 +65,6 @@ src/
   hooks/useTmdb.ts      loads TMDB data inside a component
   lib/
     tmdb.ts             TMDB client (with a 10-minute cache)
-    demo.ts             sample data for development without a key
     types.ts            TypeScript types for TMDB data
     ui.ts               shared Tailwind class groups (buttons, chips, padding)
 ```

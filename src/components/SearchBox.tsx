@@ -25,7 +25,7 @@ export default function SearchBox() {
     <form
       role="search"
       onSubmit={submit}
-      className={`${glass} flex h-12 w-full items-center gap-3 rounded-full bg-cream/12 px-5 transition-colors focus-within:border-cream/70 focus-within:bg-cream/18 md:w-[min(440px,36vw)]`}
+      className={`${glass} flex h-12 w-full items-center gap-3 rounded-full bg-cream/12 px-5 transition-colors focus-within:border-cream/70 focus-within:bg-cream/18 lg:w-[min(440px,36vw)]`}
     >
       <SearchIcon />
       <input

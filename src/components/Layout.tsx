@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import Header from './Header';
-import { isDemo } from '@/lib/tmdb';
 
 /** The shell around every page: header, page content, footer. */
 export default function Layout() {
@@ -23,12 +22,8 @@ export default function Layout() {
       </main>
       <footer className="relative mt-10 flex flex-wrap justify-between gap-3 px-4 py-7 text-[13px] text-muted md:px-10 lg:px-16">
         <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-accent to-line to-60%" />
-        <span className="text-coral font-display text-base font-extrabold">Reel</span>
-        <span>
-          {isDemo
-            ? 'Preview mode: sample titles and artwork. Add a TMDB key to show real movies and TV.'
-            : 'Data from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.'}
-        </span>
+        <span className="text-coral font-display text-base font-extrabold">SlateQue</span>
+        <span>Data from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</span>
       </footer>
     </>
   );
