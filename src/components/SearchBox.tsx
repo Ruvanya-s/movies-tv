@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { SearchIcon } from './Icons';
+import { glass } from '@/lib/ui';
 
 export default function SearchBox() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export default function SearchBox() {
     <form
       role="search"
       onSubmit={submit}
-      className="flex h-12 w-full items-center gap-3 rounded-full border border-border bg-surface px-5 text-muted transition-colors focus-within:border-muted md:h-14 md:w-[min(480px,40vw)]"
+      className={`${glass} flex h-12 w-full items-center gap-3 rounded-full bg-cream/12 px-5 transition-colors focus-within:border-accent focus-within:bg-cream/18 md:w-[min(440px,36vw)]`}
     >
       <SearchIcon />
       <input
@@ -34,7 +35,7 @@ export default function SearchBox() {
         aria-label="Search movies and TV"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        className="min-w-0 flex-1 bg-transparent text-base text-cream outline-none placeholder:text-muted md:text-xl"
+        className="min-w-0 flex-1 bg-transparent text-base text-cream outline-none placeholder:text-cream/75 md:text-[17px]"
       />
     </form>
   );

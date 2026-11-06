@@ -4,7 +4,7 @@ import PageTitle from '@/components/PageTitle';
 import Seo from '@/components/Seo';
 import { NotConnected, Notice } from '@/components/States';
 import { useTmdb } from '@/hooks/useTmdb';
-import { hasApiKey, listOf } from '@/lib/tmdb';
+import { dataReady, listOf } from '@/lib/tmdb';
 import { gutter } from '@/lib/ui';
 import type { TmdbList } from '@/lib/types';
 
@@ -25,7 +25,7 @@ export default function Search() {
       <Seo title={q ? `Search results for “${q}”` : 'Search'} noindex />
       <PageTitle label="Search" title={q ? `“${q}”` : 'Search movies & TV'} />
 
-      {!hasApiKey ? (
+      {!dataReady ? (
         <NotConnected />
       ) : !q ? (
         <Notice title="Type something to search" text="Use the search box at the top of the page." />

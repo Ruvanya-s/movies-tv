@@ -37,6 +37,14 @@ export function StarIcon({ size = 14, ...rest }: IconProps) {
   );
 }
 
+export function PlayIcon({ size = 16, ...rest }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...rest}>
+      <path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" />
+    </svg>
+  );
+}
+
 export function ChevronIcon({ size = 20, dir = 'right', ...rest }: IconProps & { dir?: 'left' | 'right' }) {
   return (
     <svg

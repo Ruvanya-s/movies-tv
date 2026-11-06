@@ -17,7 +17,9 @@ using data from the TMDB API. Pages are handled by **React Router**.
    npm run dev
    ```
 
-   It opens http://localhost:5173. Without a key you'll see "Movie data isn't connected yet" — that's expected.
+   It opens http://localhost:5173. Without a key, the dev server shows made-up sample titles and artwork
+   from `src/lib/demo.ts` so you can work on the design. A production build without a key shows
+   "Movie data isn't connected yet" instead.
 
 ## Connect movie data (TMDB)
 
@@ -43,8 +45,8 @@ to visitors. That's normal for TMDB's free, read-only keys.
 
 | URL | What it is |
 | --- | --- |
-| `/` | Hero, trending spotlight, rows for trending, in theaters, popular and top rated |
-| `/browse` | Films / Series, genre filter, sort, page links (`?type=tv&genre=18&sort=newest&page=2`) |
+| `/` | Trending hero carousel with a next arrow, rows for trending, in theaters, popular and top rated |
+| `/browse` | Movies / TV Shows, genre and sort dropdowns, page links (`?type=tv&genre=18&sort=newest&page=2`) |
 | `/search?q=...` | Search across movies and TV |
 | `/movie/:id`, `/tv/:id` | Detail page: backdrop, facts, genres, trailer, cast, recommendations |
 
@@ -61,10 +63,11 @@ src/
   App.tsx               the list of URLs and which page each one shows
   index.css             Tailwind import + design tokens (colors, fonts)
   pages/                Home, Browse, Search, Details, NotFound
-  components/           Header, SearchBox, Card, Row, RowTrack, Grid, Layout, Seo, ...
+  components/           Header, Hero, SearchBox, Card, Row, RowTrack, Grid, Layout, Seo, ...
   hooks/useTmdb.ts      loads TMDB data inside a component
   lib/
     tmdb.ts             TMDB client (with a 10-minute cache)
+    demo.ts             sample data for development without a key
     types.ts            TypeScript types for TMDB data
     ui.ts               shared Tailwind class groups (buttons, chips, padding)
 ```
@@ -73,6 +76,7 @@ src/
 
 - Colors and fonts are defined once in `src/index.css` under `@theme`.
   Each becomes a class: `--color-accent` → `bg-accent`, `text-accent`, `border-accent`.
+- The coral gradient is `--gradient-coral`, used through the `bg-coral` and `text-coral` classes.
 - Class groups used in several places live in `src/lib/ui.ts`.
 
 ## SEO

@@ -8,24 +8,74 @@
  * Change a color here and it updates everywhere.
  */
 @theme {
-  --color-bg: #1f120d;
-  --color-surface: #2b1c16;
-  --color-surface-2: #35241c;
-  --color-border: #4a3328;
-  --color-line: #3b281f;
-  --color-cream: #f4ede2;
-  --color-cream-2: #e7d9c7;
-  --color-muted: #b99e88;
-  --color-accent: #e8b067;
+  /* Brand: navy #0B1428, coral #FF6B5B, cream #F4EDE0 */
+  --color-bg: #0b1428;
+  --color-surface: #131e38;
+  --color-surface-2: #1b2947;
+  --color-border: #51555f;
+  --color-line: #353b49;
+  --color-cream: #f4ede0;
+  --color-cream-2: #efe8db;
+  --color-muted: #d2ccc3;
+  --color-accent: #ff6b5b;
 
-  --font-display: 'Unbounded', 'Arial Black', sans-serif;
-  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-display: 'Syne', 'Arial Black', sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
 
   --animate-shimmer: shimmer 1.4s linear infinite;
   @keyframes shimmer {
     from { background-position: 100% 0; }
     to { background-position: -200% 0; }
   }
+
+  --animate-fade-in: fade-in 0.6s ease-out;
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* A new hero image pushing in from the right edge. */
+  --animate-slide-in: slide-in 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  @keyframes slide-in {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  /* Text and thumbnails following it, with a shorter travel. */
+  --animate-slide-soft: slide-soft 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  @keyframes slide-soft {
+    from { opacity: 0; transform: translateX(56px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+}
+
+/* The signature coral gradient. Change it here and every use follows. */
+:root {
+  --gradient-coral: linear-gradient(105deg, #ffb7a3 0%, #ff6b5b 55%, #e8473d 100%);
+}
+
+/* Coral gradient fill for buttons, active states and bars. */
+@utility bg-coral {
+  background-image: var(--gradient-coral);
+}
+
+/* Coral gradient text. Pair with w-fit on block elements so the full gradient shows. */
+@utility text-coral {
+  background-image: var(--gradient-coral);
+  background-clip: text;
+  color: transparent;
+}
+
+/* Big headline fill: cream at the top, melting through peach into coral. Pair with w-fit. */
+@utility text-headline {
+  background-image: linear-gradient(160deg, #f4ede0 0%, #f4ede0 24%, #f2b6a3 46%, #ff6b5b 76%);
+  background-clip: text;
+  color: transparent;
+}
+
+/* Soft coral light in the top-left corner of a page. */
+@utility coral-glow {
+  background-image: radial-gradient(ellipse 70% 100% at 0% 0%, rgb(255 107 91 / 0.26), transparent 70%);
 }
 
 /* Loading placeholder background. Usage: className="skeleton" */
@@ -51,6 +101,10 @@
 @layer base {
   body {
     @apply min-h-screen bg-bg font-sans text-cream antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
   input[type='search']::-webkit-search-cancel-button {
     filter: invert(0.7);

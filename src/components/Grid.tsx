@@ -1,7 +1,7 @@
 import Card, { CardSkeleton } from './Card';
 import type { Title } from '@/lib/types';
 
-const grid = 'mb-10 grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-x-[18px] gap-y-7 md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]';
+const grid = 'mb-10 grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-x-5 gap-y-8 md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]';
 
 export default function Grid({ items }: { items: Title[] }) {
   return (

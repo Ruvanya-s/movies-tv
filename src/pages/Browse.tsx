@@ -1,12 +1,32 @@
-import { Link, useSearchParams } from 'react-router';
+import type { ReactNode } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import Grid, { GridSkeleton } from '@/components/Grid';
+import { ChevronIcon } from '@/components/Icons';
 import PageTitle from '@/components/PageTitle';
 import Seo from '@/components/Seo';
 import { NotConnected, Notice } from '@/components/States';
 import { useTmdb } from '@/hooks/useTmdb';
-import { hasApiKey, listOf } from '@/lib/tmdb';
-import { btn, btnGhost, chip, gutter, segment } from '@/lib/ui';
+import { dataReady, listOf } from '@/lib/tmdb';
+import { btn, btnGhost, gutter, segment } from '@/lib/ui';
 import type { Genre, MediaType, TmdbList } from '@/lib/types';
+
+type SelectProps = { label: string; value: string; onChange: (value: string) => void; children: ReactNode };
+
+function Select({ label, value, onChange, children }: SelectProps) {
+  return (
+    <label className="relative inline-flex">
+      <span className="sr-only">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-12 cursor-pointer appearance-none rounded-full border-2 border-cream bg-cream pr-11 pl-5 font-semibold text-bg transition-colors outline-none hover:border-accent focus-visible:border-accent *:bg-cream"
+      >
+        {children}
+      </select>
+      <ChevronIcon size={18} className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 rotate-90 text-bg" />
+    </label>
+  );
+}
 
 const SORTS = {
   'popularity.desc': 'Most popular',
@@ -44,6 +64,7 @@ const today = new Date().toISOString().slice(0, 10);
 
 export default function Browse() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const f = readFilters(searchParams);
   const { type, genre, sort, page } = f;
 
@@ -62,7 +83,7 @@ export default function Browse() {
   const totalPages = Math.min(data?.total_pages ?? 1, 500);
   const g = genres.find((x) => String(x.id) === genre)?.name;
   const kind = type === 'tv' ? 'TV Series' : 'Movies';
-  const heading = g ? `${g} ${type === 'tv' ? 'series' : 'films'}.` : 'Every genre, every era.';
+  const heading = g ? `${g} ${type === 'tv' ? 'series' : 'movies'}` : 'Browse';
 
   const seo = (
     <Seo
@@ -71,11 +92,11 @@ export default function Browse() {
     />
   );
 
-  if (!hasApiKey) {
+  if (!dataReady) {
     return (
       <div className={gutter}>
         {seo}
-        <PageTitle label="Browse" title="Every genre, every era." />
+        <PageTitle title="Browse" />
         <NotConnected />
       </div>
     );
@@ -84,14 +105,14 @@ export default function Browse() {
   return (
     <div className={gutter}>
       {seo}
-      <PageTitle label="Browse" title={heading} />
+      <PageTitle title={heading} />
 
-      <div className="mb-[18px] flex flex-wrap justify-between gap-3.5">
-        <div className="inline-flex flex-wrap rounded-full border border-border bg-surface p-1">
+      <div className="mb-9 flex flex-wrap items-center gap-3.5">
+        <div className="inline-flex h-12 items-center rounded-full bg-cream p-1">
           {(
             [
-              ['movie', 'Films'],
-              ['tv', 'Series'],
+              ['movie', 'Movies'],
+              ['tv', 'TV Shows'],
             ] as const
           ).map(([v, label]) => (
             <Link key={v} className={segment(type === v)} to={href(f, { type: v, genre: '', page: 1 })}>
@@ -99,25 +120,22 @@ export default function Browse() {
             </Link>
           ))}
         </div>
-        <div className="inline-flex flex-wrap rounded-full border border-border bg-surface p-1">
-          {(Object.keys(SORTS) as Sort[]).map((v) => (
-            <Link key={v} className={segment(sort === v)} to={href(f, { sort: v, page: 1 })}>
-              {SORTS[v]}
-            </Link>
+        <Select label="Genre" value={genre} onChange={(v) => navigate(href(f, { genre: v, page: 1 }))}>
+          <option value="">All genres</option>
+          {genres.map((x) => (
+            <option key={x.id} value={x.id}>
+              {x.name}
+            </option>
           ))}
-        </div>
+        </Select>
+        <Select label="Sort by" value={sort} onChange={(v) => navigate(href(f, { sort: v as Sort, page: 1 }))}>
+          {(Object.keys(SORTS) as Sort[]).map((v) => (
+            <option key={v} value={v}>
+              {SORTS[v]}
+            </option>
+          ))}
+        </Select>
       </div>
-
-      <nav className="mb-8 flex flex-wrap gap-2.5" aria-label="Genres">
-        <Link className={chip(!genre)} to={href(f, { genre: '', page: 1 })}>
-          All
-        </Link>
-        {genres.map((x) => (
-          <Link key={x.id} className={chip(genre === String(x.id))} to={href(f, { genre: String(x.id), page: 1 })}>
-            {x.name}
-          </Link>
-        ))}
-      </nav>
 
       {error ? (
         <Notice title="Something went wrong" text={error.message} />

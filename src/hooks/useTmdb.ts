@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { hasApiKey, tmdb, type Params } from '@/lib/tmdb';
+import { dataReady, tmdb, type Params } from '@/lib/tmdb';
 
 type State<T> = { data: T | null; error: Error | null; loading: boolean };
 
@@ -9,7 +9,7 @@ type State<T> = { data: T | null; error: Error | null; loading: boolean };
  * Pass `null` as the path to skip loading (e.g. an empty search).
  */
 export function useTmdb<T>(path: string | null, params?: Params): State<T> {
-  const enabled = hasApiKey && path !== null;
+  const enabled = dataReady && path !== null;
   const key = path + JSON.stringify(params ?? {});
   const [state, setState] = useState<State<T>>({ data: null, error: null, loading: enabled });
 

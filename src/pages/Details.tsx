@@ -1,26 +1,25 @@
+import { useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
 import Row from '@/components/Row';
-import RowTrack from '@/components/RowTrack';
 import Seo from '@/components/Seo';
 import JsonLd from '@/components/JsonLd';
 import { NotConnected, Notice } from '@/components/States';
-import { StarIcon } from '@/components/Icons';
+import { PlayIcon, StarIcon } from '@/components/Icons';
 import NotFound from './NotFound';
 import { useTmdb } from '@/hooks/useTmdb';
-import { hasApiKey, img, NotFoundError } from '@/lib/tmdb';
+import { dataReady, findTrailer, img, NotFoundError } from '@/lib/tmdb';
 import { btn, chip, gutter, pill } from '@/lib/ui';
 import type { MediaType, TmdbDetail } from '@/lib/types';
 
 const runtime = (m?: number) => (m ? `${Math.floor(m / 60)}h ${m % 60}m` : null);
 
-const findTrailer = (d: TmdbDetail) => d.videos?.results.find((v) => v.site === 'YouTube' && v.type === 'Trailer');
 const findDirector = (d: TmdbDetail) => d.credits?.crew.find((c) => c.job === 'Director');
 
 /** schema.org Movie / TVSeries data that helps search engines understand the page. */
 function structuredData(type: MediaType, d: TmdbDetail): Record<string, unknown> {
   const name = d.title || d.name;
   const director = findDirector(d);
-  const trailer = findTrailer(d);
+  const trailer = findTrailer(d.videos?.results);
   return {
     '@context': 'https://schema.org',
     '@type': type === 'tv' ? 'TVSeries' : 'Movie',
@@ -57,6 +56,35 @@ function structuredData(type: MediaType, d: TmdbDetail): Record<string, unknown>
   };
 }
 
+/** One "Label: value" line in the facts list. */
+function Fact({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div>
+      <dt className="inline text-cream/60">{label}: </dt>
+      <dd className="inline font-medium">{children}</dd>
+    </div>
+  );
+}
+
+/** The first few cast names, with a "more" link that reveals the rest. */
+function CastNames({ names }: { names: string[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const hasMore = !expanded && names.length > 3;
+  return (
+    <>
+      {(hasMore ? names.slice(0, 3) : names).join(', ')}
+      {hasMore && (
+        <>
+          ,{' '}
+          <button type="button" onClick={() => setExpanded(true)} className="cursor-pointer italic hover:text-accent">
+            more
+          </button>
+        </>
+      )}
+    </>
+  );
+}
+
 /** Detail page for /movie/:id and /tv/:id. */
 export default function Details({ type }: { type: MediaType }) {
   const { id = '' } = useParams();
@@ -66,7 +94,7 @@ export default function Details({ type }: { type: MediaType }) {
   });
 
   if (!validId || error instanceof NotFoundError) return <NotFound />;
-  if (!hasApiKey) {
+  if (!dataReady) {
     return (
       <div className={gutter}>
         <NotConnected />
@@ -91,7 +119,7 @@ export default function Details({ type }: { type: MediaType }) {
   const title = data.title || data.name || 'Untitled';
   const date = data.release_date || data.first_air_date || '';
   const year = date.slice(0, 4);
-  const trailer = findTrailer(data);
+  const trailer = findTrailer(data.videos?.results);
   const director = findDirector(data);
   const cast = data.credits?.cast.slice(0, 12) ?? [];
   const creators = data.created_by?.map((c) => c.name).join(', ');
@@ -125,12 +153,13 @@ export default function Details({ type }: { type: MediaType }) {
       <div className="absolute inset-x-0 top-0 h-[70vh] overflow-hidden">
         {backdrop && <img src={backdrop} alt="" fetchPriority="high" className="h-full w-full object-cover opacity-55" />}
         <div className="absolute inset-0 bg-linear-to-b from-bg/30 to-bg to-95%" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_0%_100%,rgb(255_107_91/0.4),transparent_70%)]" />
       </div>
 
       <div
         className={`${gutter} relative grid grid-cols-1 gap-6 pt-[30vh] pb-14 md:grid-cols-[minmax(180px,300px)_1fr] md:gap-14 md:pt-[18vh]`}
       >
-        <div className="aspect-[2/3] w-[180px] overflow-hidden rounded-[14px] border border-border bg-surface shadow-[0_30px_60px_rgba(0,0,0,0.45)] md:w-auto">
+        <div className="aspect-[2/3] w-[180px] overflow-hidden rounded-2xl bg-surface shadow-[0_30px_60px_-10px_rgb(255_107_91/0.35)] md:w-auto">
           {poster ? (
             <img src={poster} alt={`${title} poster`} width={500} height={750} className="h-full w-full object-cover" />
           ) : (
@@ -142,7 +171,7 @@ export default function Details({ type }: { type: MediaType }) {
           {data.tagline && (
             <span className="block text-sm font-bold tracking-[0.14em] text-accent uppercase">{data.tagline}</span>
           )}
-          <h1 className="mt-3.5 mb-[18px] font-display text-[clamp(32px,5vw,68px)] leading-[1.02] font-black tracking-tight">
+          <h1 className="mt-3.5 mb-[18px] font-display text-[clamp(32px,5vw,68px)] leading-[1.02] font-extrabold tracking-tight">
             {title}
           </h1>
           <div className="flex flex-wrap items-center gap-3.5 font-semibold text-muted">
@@ -164,44 +193,30 @@ export default function Details({ type }: { type: MediaType }) {
           </div>
           <p className="max-w-[70ch] text-lg leading-relaxed text-cream-2">{data.overview || 'No overview available.'}</p>
 
-          <dl className="my-6 mb-[30px] grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 font-semibold">
+          <dl className="my-6 mb-[30px] flex max-w-[70ch] flex-col gap-2.5">
+            {cast.length > 0 && (
+              <Fact label="Cast">
+                <CastNames names={cast.map((p) => p.name)} />
+              </Fact>
+            )}
             {details
               .filter(([, value]) => value)
               .map(([label, value]) => (
-                <div key={label} className="contents">
-                  <dt className="text-muted">{label}</dt>
-                  <dd>{value}</dd>
-                </div>
+                <Fact key={label} label={label}>
+                  {value}
+                </Fact>
               ))}
           </dl>
 
           {trailer && (
             <a className={btn} href={`https://www.youtube.com/watch?v=${trailer.key}`} target="_blank" rel="noreferrer">
-              ▶ Watch trailer
+              <PlayIcon /> Watch trailer
             </a>
           )}
         </div>
       </div>
 
       <div className={`${gutter} relative`}>
-        {cast.length > 0 && (
-          <RowTrack title="Cast" size="person">
-            {cast.map((p) => (
-              <div key={p.credit_id} className="min-w-0 text-center">
-                <div className="grid aspect-square place-items-center overflow-hidden rounded-full border border-line bg-surface font-display text-[32px] text-muted">
-                  {p.profile_path ? (
-                    <img src={img(p.profile_path, 'w185')!} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
-                  ) : (
-                    p.name.charAt(0)
-                  )}
-                </div>
-                <div className="mt-2.5 truncate text-[15px] font-bold">{p.name}</div>
-                <div className="mt-0.5 truncate text-[13px] text-muted">{p.character}</div>
-              </div>
-            ))}
-          </RowTrack>
-        )}
-
         <Row title="You might also like" path={`/${type}/${id}/recommendations`} type={type} />
       </div>
     </article>
