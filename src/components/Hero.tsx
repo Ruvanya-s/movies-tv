@@ -6,13 +6,8 @@ import { findTrailer, listOf } from '@/lib/tmdb';
 import { btnGlass, eyebrow, glass, glassArrow, gutter } from '@/lib/ui';
 import type { Title, TmdbList, Video } from '@/lib/types';
 
-// The negative margin (the header's height) slides the banner under the translucent header.
 const height = '-mt-[156px] min-h-[680px] sm:-mt-[127px] md:h-[min(100vh,856px)] md:min-h-[700px] lg:-mt-[76px]';
 
-/**
- * First half of the words (rounded up) in cream, the rest in the coral gradient.
- * A one-word title is all gradient, so every title has some coral.
- */
 function TwoToneTitle({ title }: { title: string }) {
   const words = title.split(' ');
   const cut = words.length > 1 ? Math.ceil(words.length / 2) : 0;

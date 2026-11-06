@@ -1,7 +1,6 @@
 import Hero from '@/components/Hero';
 import Row from '@/components/Row';
 import Seo from '@/components/Seo';
-import JsonLd from '@/components/JsonLd';
 import { NotConnected, Notice } from '@/components/States';
 import { useTmdb } from '@/hooks/useTmdb';
 import { dataReady } from '@/lib/tmdb';
@@ -10,24 +9,10 @@ import { gutter } from '@/lib/ui';
 export default function Home() {
   // A cheap request to check the key works before drawing all the rows.
   const probe = useTmdb('/configuration');
-  const origin = window.location.origin;
 
   return (
     <>
       <Seo />
-      <JsonLd
-        data={{
-          '@context': 'https://schema.org',
-          '@type': 'WebSite',
-          name: 'SlateQue',
-          url: origin,
-          potentialAction: {
-            '@type': 'SearchAction',
-            target: `${origin}/search?q={search_term_string}`,
-            'query-input': 'required name=search_term_string',
-          },
-        }}
-      />
 
       {/* The banner shows a film's name, so the page's main heading is for screen readers and search engines. */}
       <h1 className="sr-only">SlateQue: find your next favorite film or series</h1>

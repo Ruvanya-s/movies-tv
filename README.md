@@ -78,8 +78,7 @@ src/
 
 ## SEO
 
-Each page sets its own `<title>`, description and preview image, and detail pages include
-schema.org `Movie` / `TVSeries` data. Because this is a single-page React app, the content is
+Each page sets its own `<title>`, description and preview image. Because this is a single-page React app, the content is
 built in the browser: Google can still index it (it runs JavaScript), but some link-preview bots
 (WhatsApp, Facebook) only see the default tags from `index.html`.
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type SubmitEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { SearchIcon } from './Icons';
 import { glass } from '@/lib/ui';
@@ -8,14 +8,14 @@ export default function SearchBox() {
   const location = useLocation();
   const [q, setQ] = useState('');
 
-  // Keep the box in sync with /search?q=...
+  // Synchronizing the search box with the URL
   useEffect(() => {
     if (location.pathname === '/search') {
       setQ(new URLSearchParams(location.search).get('q') ?? '');
     }
   }, [location.pathname, location.search]);
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const term = q.trim();
     if (term) navigate(`/search?q=${encodeURIComponent(term)}`);

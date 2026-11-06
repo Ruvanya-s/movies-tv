@@ -2,7 +2,6 @@ import { useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
 import Row from '@/components/Row';
 import Seo from '@/components/Seo';
-import JsonLd from '@/components/JsonLd';
 import { NotConnected, Notice } from '@/components/States';
 import { PlayIcon } from '@/components/Icons';
 import NotFound from './NotFound';
@@ -14,37 +13,6 @@ import type { MediaType, TmdbDetail } from '@/lib/types';
 const runtime = (m?: number) => (m ? `${Math.floor(m / 60)}h ${m % 60}m` : null);
 
 const findDirector = (d: TmdbDetail) => d.credits?.crew.find((c) => c.job === 'Director');
-
-/** schema.org Movie / TVSeries data that helps search engines understand the page. */
-function structuredData(type: MediaType, d: TmdbDetail): Record<string, unknown> {
-  const name = d.title || d.name;
-  const director = findDirector(d);
-  const trailer = findTrailer(d.videos?.results);
-  return {
-    '@context': 'https://schema.org',
-    '@type': type === 'tv' ? 'TVSeries' : 'Movie',
-    name,
-    url: `${window.location.origin}/${type}/${d.id}`,
-    description: d.overview || undefined,
-    image: img(d.poster_path, 'w500') ?? undefined,
-    datePublished: d.release_date || d.first_air_date || undefined,
-    genre: d.genres?.map((g) => g.name),
-    actor: d.credits?.cast.slice(0, 10).map((p) => ({ '@type': 'Person', name: p.name })),
-    director: director ? { '@type': 'Person', name: director.name } : undefined,
-    creator: d.created_by?.length ? d.created_by.map((c) => ({ '@type': 'Person', name: c.name })) : undefined,
-    numberOfSeasons: type === 'tv' ? d.number_of_seasons : undefined,
-    duration: d.runtime ? `PT${Math.floor(d.runtime / 60)}H${d.runtime % 60}M` : undefined,
-    trailer: trailer
-      ? {
-          '@type': 'VideoObject',
-          name: `${name} trailer`,
-          embedUrl: `https://www.youtube.com/embed/${trailer.key}`,
-          thumbnailUrl: `https://i.ytimg.com/vi/${trailer.key}/hqdefault.jpg`,
-          uploadDate: trailer.published_at,
-        }
-      : undefined,
-  };
-}
 
 /** One "Label: value" line in the facts list. */
 function Fact({ label, children }: { label: string; children: ReactNode }) {
@@ -137,7 +105,6 @@ export default function Details({ type }: { type: MediaType }) {
         description={(data.overview || `${title}: details, cast and trailer.`).slice(0, 160)}
         image={backdrop ?? poster}
       />
-      <JsonLd data={structuredData(type, data)} />
 
       {/* Faded backdrop behind the header */}
       <div className="absolute inset-x-0 top-0 h-[70vh] overflow-hidden">

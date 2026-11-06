@@ -42,7 +42,6 @@ export interface Video {
   key: string;
   site: string;
   type: string;
-  published_at?: string;
 }
 
 /** Full detail for /movie/{id} or /tv/{id} with credits and videos appended. */

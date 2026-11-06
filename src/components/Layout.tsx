@@ -2,12 +2,11 @@ import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import Header from './Header';
 
-/** The shell around every page: header, page content, footer. */
+/** header, page content, footer. */
 export default function Layout() {
   const { pathname, search } = useLocation();
 
   // Start each new page at the top.
-  // (Braces matter: an effect may only return a cleanup function, and newer
   // browsers make scrollTo() return a value.)
   useEffect(() => {
     window.scrollTo(0, 0);
