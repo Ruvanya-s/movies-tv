@@ -24,7 +24,7 @@ export const btnGlass = `${glass} inline-flex items-center gap-2 rounded-full bg
 
 /** Primary pill button. */
 export const btn =
-  'inline-flex items-center gap-2 rounded-full bg-coral px-7 py-3 text-base font-extrabold text-bg shadow-[0_10px_30px_-8px_rgb(255_129_112/0.7)] transition-all hover:-translate-y-px hover:shadow-[0_14px_36px_-6px_rgb(255_129_112/0.9)]';
+  'inline-flex items-center gap-2 rounded-full bg-coral px-7 py-3 text-base font-extrabold text-bg transition-all hover:-translate-y-px';
 
 /** Outlined pill button. */
 export const btnGhost =
