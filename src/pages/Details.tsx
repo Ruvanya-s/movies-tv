@@ -8,7 +8,7 @@ import { PlayIcon } from '@/components/Icons';
 import NotFound from './NotFound';
 import { useTmdb } from '@/hooks/useTmdb';
 import { dataReady, findTrailer, img, NotFoundError } from '@/lib/tmdb';
-import { btnTrailer, chip, gutter } from '@/lib/ui';
+import { btnGlass, chip, gutter } from '@/lib/ui';
 import type { MediaType, TmdbDetail } from '@/lib/types';
 
 const runtime = (m?: number) => (m ? `${Math.floor(m / 60)}h ${m % 60}m` : null);
@@ -195,7 +195,7 @@ export default function Details({ type }: { type: MediaType }) {
 
           {trailer && (
             <a
-              className={btnTrailer}
+              className={btnGlass}
               href={`https://www.youtube.com/watch?v=${trailer.key}`}
               target="_blank"
               rel="noreferrer"

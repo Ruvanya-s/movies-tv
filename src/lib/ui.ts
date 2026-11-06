@@ -19,8 +19,8 @@ export const glass =
  */
 export const glassArrow = `${glass} shrink-0 cursor-pointer place-items-center rounded-full bg-cream/25 backdrop-brightness-75 transition-all hover:scale-110 hover:bg-cream/40`;
 
-/** Trailer button: light coral glass pill. */
-export const btnTrailer = `${glass} inline-flex items-center gap-2 rounded-full bg-[#ffb7a6]/50 px-7 py-3 font-extrabold transition-all hover:-translate-y-px hover:bg-[#ffb7a6]/65`;
+/** Light coral glass pill button. */
+export const btnGlass = `${glass} inline-flex items-center gap-2 rounded-full bg-[#ffb7a6]/50 px-7 py-3 font-extrabold transition-all hover:-translate-y-px hover:bg-[#ffb7a6]/65`;
 
 /** Primary pill button. */
 export const btn =

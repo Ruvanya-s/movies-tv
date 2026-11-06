@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { ChevronIcon, PlayIcon } from './Icons';
 import { useTmdb } from '@/hooks/useTmdb';
 import { findTrailer, listOf } from '@/lib/tmdb';
-import { btnTrailer, eyebrow, glass, glassArrow, gutter } from '@/lib/ui';
+import { btnGlass, eyebrow, glass, glassArrow, gutter } from '@/lib/ui';
 import type { Title, TmdbList, Video } from '@/lib/types';
 
 // The negative margin (the header's height) slides the banner under the translucent header.
@@ -39,7 +39,7 @@ function Actions({ pick }: { pick: Title }) {
       </Link>
       {trailer && (
         <a
-          className={`${btnTrailer} animate-fade-in`}
+          className={`${btnGlass} animate-fade-in`}
           href={`https://www.youtube.com/watch?v=${trailer.key}`}
           target="_blank"
           rel="noreferrer"
